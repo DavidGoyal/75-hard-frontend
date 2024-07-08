@@ -24,6 +24,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setOpen } from "../redux/reducers/miscReducer";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { updateProgress } from "../types/api-types";
 
 const Home = () => {
 	const navigate = useNavigate();
@@ -44,10 +46,12 @@ const Home = () => {
 		try {
 			const res = await reset();
 
-			if (res.data?.success) {
-				toast.success(res.data?.message, { id });
+			if ("data" in res) {
+				toast.success(res.data!.message, { id });
 			} else {
-				toast.error(res.data?.message as string, { id });
+				const error = res.error as FetchBaseQueryError;
+				const message = error.data as updateProgress;
+				toast.error(message.message, { id });
 			}
 		} catch (error) {
 			toast.error("Cannot Reset", { id });

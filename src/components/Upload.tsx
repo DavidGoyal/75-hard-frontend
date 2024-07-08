@@ -18,6 +18,8 @@ import {
 } from "../redux/api/api";
 import { VisuallyHiddenInput } from "./styles/StyledComponents";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { updateProgress } from "../types/api-types";
 
 const Upload = () => {
 	const photo = useFileHandler("single");
@@ -42,13 +44,15 @@ const Upload = () => {
 		try {
 			const res = await uploadFile({ formData });
 
-			if (res.data?.success) {
+			if ("data" in res) {
 				toast.success(
 					(res.data?.message as string) || "File uploaded successfully",
 					{ id }
 				);
 			} else {
-				toast.error(res.data?.message as string, { id });
+				const error = res.error as FetchBaseQueryError;
+				const message = error.data as updateProgress;
+				toast.error(message.message, { id });
 			}
 		} catch (error) {
 			toast.error("Something went wrong", { id });

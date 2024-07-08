@@ -10,19 +10,22 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { FormEvent, useState } from "react";
-import { VisuallyHiddenInput } from "../components/styles/StyledComponents.tsx";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { userExists, userNotExists } from "../redux/reducers/userReducer.ts";
+import { VisuallyHiddenInput } from "../components/styles/StyledComponents.tsx";
 import { server } from "../constants/config.ts";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useLoginMutation, useRegisterMutation } from "../redux/api/api.ts";
+import { userExists, userNotExists } from "../redux/reducers/userReducer.ts";
 import { updateProgress } from "../types/api-types.ts";
 
 const Login = () => {
 	const [isLogin, setIsLogin] = useState(true);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const [login] = useLoginMutation();
+	const [register] = useRegisterMutation();
 
 	const dispatch = useDispatch();
 
@@ -38,24 +41,18 @@ const Login = () => {
 		console.log(server);
 
 		try {
-			const res = await axios.post(
-				`${server}/api/v1/user/login`,
-				{ email: email.value, password: password.value },
-				{
-					withCredentials: true,
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
+			const res = await login({
+				email: email.value,
+				password: password.value,
+			});
 
-			if (res.data) {
-				toast.success(res.data.message, { id });
-				dispatch(userExists(res.data.user));
+			if ("data" in res) {
+				toast.success(res.data!.message, { id });
+				dispatch(userExists(res.data!.user));
 			} else {
 				const error = res.error as FetchBaseQueryError;
 				const message = error.data as updateProgress;
-				toast.error(message.message, { id });
+				toast.error(message.message || "Something Went Wrong", { id });
 				dispatch(userNotExists());
 			}
 		} catch (error) {
@@ -65,6 +62,8 @@ const Login = () => {
 			dispatch(userNotExists());
 		}
 		setIsLoading(false);
+		email.clear();
+		password.clear();
 	};
 
 	const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
@@ -79,20 +78,15 @@ const Login = () => {
 		const id = toast.loading("Registering");
 
 		try {
-			const res = await axios.post(`${server}/api/v1/user/new`, myForm, {
-				withCredentials: true,
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			});
+			const res = await register({ formData: myForm });
 
-			if (res.data) {
-				toast.success(res.data.message, { id });
-				dispatch(userExists(res.data.user));
+			if ("data" in res) {
+				toast.success(res.data!.message, { id });
+				dispatch(userExists(res.data!.user));
 			} else {
 				const error = res.error as FetchBaseQueryError;
 				const message = error.data as updateProgress;
-				toast.error(message.message, { id });
+				toast.error(message.message || "User already exists", { id });
 				dispatch(userNotExists());
 			}
 		} catch (error) {

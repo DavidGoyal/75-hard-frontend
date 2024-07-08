@@ -1,4 +1,4 @@
-import { PhotoType } from "./types";
+import { PhotoType, UserType } from "./types";
 
 export type CheckProgress = {
 	success: boolean;
@@ -8,6 +8,17 @@ export type CheckProgress = {
 export type updateProgress = {
 	success: boolean;
 	message: string;
+};
+
+export type UserResponse = {
+	success: boolean;
+	message: string;
+	user: UserType;
+};
+
+export type UserInput = {
+	email: string;
+	password: string;
 };
 
 export type GetAllPhotos = {

@@ -5,6 +5,8 @@ import {
 	GetAllPhotos,
 	updateProgress,
 	updateProgressInput,
+	UserInput,
+	UserResponse,
 } from "../../types/api-types";
 
 export const api = createApi({
@@ -12,6 +14,26 @@ export const api = createApi({
 	baseQuery: fetchBaseQuery({ baseUrl: `${server}/api/v1/` }),
 	tagTypes: ["Photo"],
 	endpoints: (builder) => ({
+		login: builder.mutation<UserResponse, UserInput>({
+			query: ({ email, password }) => {
+				return {
+					url: "user/login",
+					method: "POST",
+					credentials: "include",
+					body: { email, password },
+				};
+			},
+		}),
+		register: builder.mutation<UserResponse, updateProgressInput>({
+			query: ({ formData }) => {
+				return {
+					url: "user/new",
+					method: "POST",
+					credentials: "include",
+					body: formData,
+				};
+			},
+		}),
 		getProgress: builder.query<CheckProgress, void>({
 			query: () => {
 				return {
@@ -72,4 +94,6 @@ export const {
 	useUpdateProgressMutation,
 	useResetProgressMutation,
 	useGetPhotosQuery,
+	useLoginMutation,
+	useRegisterMutation,
 } = api;
