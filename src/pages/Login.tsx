@@ -17,6 +17,8 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { userExists, userNotExists } from "../redux/reducers/userReducer.ts";
 import { server } from "../constants/config.ts";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { updateProgress } from "../types/api-types.ts";
 
 const Login = () => {
 	const [isLogin, setIsLogin] = useState(true);
@@ -47,11 +49,13 @@ const Login = () => {
 				}
 			);
 
-			if (res.data.success) {
+			if (res.data) {
 				toast.success(res.data.message, { id });
 				dispatch(userExists(res.data.user));
 			} else {
-				toast.error(res.data.message, { id });
+				const error = res.error as FetchBaseQueryError;
+				const message = error.data as updateProgress;
+				toast.error(message.message, { id });
 				dispatch(userNotExists());
 			}
 		} catch (error) {
@@ -82,15 +86,17 @@ const Login = () => {
 				},
 			});
 
-			if (res.data.success) {
+			if (res.data) {
 				toast.success(res.data.message, { id });
 				dispatch(userExists(res.data.user));
 			} else {
-				toast.error(res.data.message, { id });
+				const error = res.error as FetchBaseQueryError;
+				const message = error.data as updateProgress;
+				toast.error(message.message, { id });
 				dispatch(userNotExists());
 			}
 		} catch (error) {
-			toast.error("Something went wrong!", {
+			toast.error("Sign In Fail", {
 				id,
 			});
 			dispatch(userNotExists());
