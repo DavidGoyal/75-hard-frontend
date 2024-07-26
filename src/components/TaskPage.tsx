@@ -259,7 +259,7 @@ const TaskPage = () => {
 						/>
 					)}
 				</Stack>
-				{CompleteLoading ? (
+				{todayProgressLoading && CompleteLoading ? (
 					<Skeleton sx={{ height: "100%", width: { xs: "100%", md: "25%" } }} />
 				) : (
 					<Stack
