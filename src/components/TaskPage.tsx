@@ -99,7 +99,8 @@ const TaskPage = () => {
 			field: "completed",
 			headerName: "Completed",
 			width: 150,
-			renderCell: (params) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			renderCell: (params: any) => {
 				const onClick = async () => {
 					try {
 						await updateTask({ id: params.row.id });
