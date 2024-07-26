@@ -10,8 +10,10 @@ import { server } from "./constants/config";
 import { Toaster } from "react-hot-toast";
 
 const Home = lazy(() => import("./pages/Home"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Login = lazy(() => import("./pages/Login"));
 const Gallery = lazy(() => import("./pages/Gallery"));
+const Tasks = lazy(() => import("./pages/Tasks"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => {
@@ -31,10 +33,12 @@ const App = () => {
 		<Router>
 			<Suspense fallback={<Loader />}>
 				<Routes>
+					<Route path="/" element={<Home />} />
 					<Route
 						element={<ProtectedRoute isAuthenticated={user ? true : false} />}
 					>
-						<Route path="/" element={<Home />} />
+						<Route path="/dashboard" element={<Dashboard />} />
+						<Route path="/tasks" element={<Tasks />} />
 						<Route path="/gallery" element={<Gallery />} />
 					</Route>
 					<Route
@@ -42,7 +46,7 @@ const App = () => {
 						element={
 							<ProtectedRoute
 								isAuthenticated={user ? false : true}
-								redirect="/"
+								redirect="/dashboard"
 							>
 								<Login />
 							</ProtectedRoute>

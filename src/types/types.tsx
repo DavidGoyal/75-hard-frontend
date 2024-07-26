@@ -20,3 +20,13 @@ export type PhotoType = {
 	createdAt: string;
 	updatedAt: string;
 };
+
+export type TaskType = {
+	id?: string;
+	_id: string;
+	content: string;
+	completed: boolean;
+	user: string;
+	createdAt: string;
+	updatedAt: string;
+};

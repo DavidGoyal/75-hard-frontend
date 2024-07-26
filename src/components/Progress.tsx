@@ -16,7 +16,7 @@ function CircularProgressWithLabel(
 			<CircularProgress
 				variant="determinate"
 				{...props}
-				sx={{ height: "100%", color: "tomato" }}
+				sx={{ height: "100%", color: "white" }}
 			/>
 			<Box
 				sx={{
@@ -33,7 +33,7 @@ function CircularProgressWithLabel(
 				<Typography
 					variant="caption"
 					component="div"
-					color="text.secondary"
+					color="white"
 				>{`${Math.round(props.value)}%`}</Typography>
 			</Box>
 		</Box>
@@ -51,41 +51,56 @@ const Progress = () => {
 	const progress = (days / 75) * 100;
 
 	return isLoading ? (
-		<Skeleton sx={{ height: "22%", width: "50%" }} />
+		<Skeleton sx={{ height: "100%", width: { xs: "70%", sm: "25%" } }} />
 	) : (
 		<Paper
 			sx={{
-				height: "22%",
-				width: "50%",
-				bgcolor: "white",
+				height: "100%",
+				width: { xs: "70%", sm: "25%" },
 				padding: "1rem",
 				borderRadius: "20px",
+				backgroundColor: "#01796F",
 			}}
-			elevation={20}
+			elevation={10}
 		>
 			<Stack spacing={{ sm: "1rem", md: "1.5rem" }}>
-				<Typography
-					textAlign={"center"}
-					sx={{ borderBottom: "1px solid black" }}
-					fontWeight={700}
-					fontFamily={"monospace"}
-				>
-					Progress
-				</Typography>
+				<Stack>
+					<Typography fontWeight={700} fontFamily={"monospace"} color={"white"}>
+						Total Tasks
+					</Typography>
+					<Typography
+						fontWeight={700}
+						fontFamily={"monospace"}
+						color={"white"}
+						fontSize={"1.5rem"}
+					>
+						{days * 5}
+					</Typography>
+				</Stack>
 				<Stack
-					direction={{ sm: "column", md: "row" }}
+					direction={"column"}
 					justifyContent={"space-evenly"}
+					gap={"2rem"}
 					alignItems={"center"}
 				>
 					<CircularProgressWithLabel value={progress} />
 					<Typography
 						sx={{
-							border: "5px solid black",
-							borderRadius: "60%",
-							padding: "0.7rem",
+							border: "5px solid white",
+							borderRadius: "100%",
+							height: "5rem",
+							width: "5rem",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							textAlign: "center",
+							color: "white",
 						}}
 					>
-						{days}/75
+						<Stack>
+							<b>{days}/75</b>
+							<Typography>days</Typography>
+						</Stack>
 					</Typography>
 				</Stack>
 			</Stack>

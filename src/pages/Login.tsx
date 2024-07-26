@@ -21,7 +21,7 @@ import { userExists, userNotExists } from "../redux/reducers/userReducer.ts";
 import { updateProgress } from "../types/api-types.ts";
 
 const Login = () => {
-	const [isLogin, setIsLogin] = useState(true);
+	const [isLogin, setIsLogin] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [login] = useLoginMutation();

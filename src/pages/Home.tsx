@@ -1,243 +1,244 @@
-import {
-	Button,
-	Dialog,
-	DialogTitle,
-	Grid,
-	IconButton,
-	Paper,
-	Stack,
-	Typography,
-} from "@mui/material";
+import { Button, Dialog, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import SideBar from "../components/SideBar";
-import Upload from "../components/Upload";
-import toast from "react-hot-toast";
-import {
-	useGetProgressQuery,
-	useResetProgressMutation,
-} from "../redux/api/api";
-import { useState } from "react";
-import img1 from "../assets/Screenshot 2024-07-06 151914.png";
-import img2 from "../assets/Screenshot 2024-07-06 151902.png";
+import img1 from "../assets/0_1h_h2z9FDTghFT-P.jpg";
+import axios from "axios";
+import { server } from "../constants/config";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { userNotExists } from "../redux/reducers/userReducer";
 import { RootState } from "../redux/store";
-import { setOpen } from "../redux/reducers/miscReducer";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { updateProgress } from "../types/api-types";
+import img2 from "../assets/Screenshot 2024-07-26 132553.png";
+import img3 from "../assets/Screenshot 2024-07-26 133327.png";
+import img4 from "../assets/Screenshot 2024-07-26 134449.png";
+import video1 from "../assets/Untitled video - Made with Clipchamp (5).mp4";
+import { useState } from "react";
 
 const Home = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const { data, isLoading, isError } = useGetProgressQuery();
-	const [reset] = useResetProgressMutation();
-	const [buttonLoading, setButtonLoading] = useState<boolean>(false);
-	const { isOpen } = useSelector((state: RootState) => state.misc);
+	const { user } = useSelector((state: RootState) => state.user);
+	const [startVideo, setStartVideo] = useState(false);
 
-	if (isError) {
-		return toast.error("Cannot Fetch Progress");
-	}
-
-	const resetHandler = async () => {
-		setButtonLoading(true);
-		const id = toast.loading("Resetting...");
+	const logoutHandler = async () => {
 		try {
-			const res = await reset();
+			const res = await axios.get(`${server}/api/v1/user/logout`, {
+				withCredentials: true,
+			});
 
-			if ("data" in res) {
-				toast.success(res.data!.message, { id });
+			if (res.data.success) {
+				toast.success(res.data.message);
+				dispatch(userNotExists());
 			} else {
-				const error = res.error as FetchBaseQueryError;
-				const message = error.data as updateProgress;
-				toast.error(message.message, { id });
+				toast.error(res.data.message);
 			}
 		} catch (error) {
-			toast.error("Cannot Reset", { id });
+			toast.error("Something went wrong");
 		}
-		setButtonLoading(false);
 	};
-
 	return (
-		<>
-			<Header />
-			<Grid container height={"calc(100vh - 4rem)"}>
-				<Grid item xs={12} sm={7} sx={{ height: "100%" }}>
-					<Upload />
-				</Grid>
-
-				<Grid
-					item
-					xs={0}
-					sm={5}
-					bgcolor={"whitesmoke"}
-					sx={{ height: "100%", display: { xs: "none", sm: "block" } }}
+		<Stack
+			height={{ xs: "120vh", md: "100vh" }}
+			width={"100vw"}
+			bgcolor={"whitesmoke"}
+			padding={"1rem"}
+			gap={"2rem"}
+			overflow={"hidden"}
+		>
+			<Stack direction={"row"} width={"100%"}>
+				<Stack
+					direction={"row"}
+					alignItems={"center"}
+					gap={"0.5rem"}
+					flexGrow={1}
 				>
-					<SideBar />
-				</Grid>
-
-				{!isLoading && (
-					<Dialog open={(data?.days as number) >= 75}>
-						<Stack p={"1rem"} width={"20rem"} spacing={"2rem"}>
-							<DialogTitle textAlign={"center"}>
-								🎉Congratulations you have completed your 75 days challenge.🎉
-							</DialogTitle>
-							<Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
-								<Button variant="text" onClick={() => navigate("/gallery")}>
-									Click to check your memories
-								</Button>
-								<Button
-									color="error"
-									variant="outlined"
-									disabled={buttonLoading}
-									onClick={resetHandler}
-								>
-									Reset
-								</Button>
-							</Stack>
-						</Stack>
-					</Dialog>
-				)}
-
-				<Dialog
-					open={isOpen}
-					sx={{
-						width: { xs: "95%", xm: "50%" },
-						margin: "auto",
-					}}
-					onClose={() => dispatch(setOpen(false))}
-				>
-					<Stack
-						width={"100%"}
-						spacing={"2rem"}
-						height={"100%"}
+					<img
+						src={img1}
+						style={{ height: "2.2rem", width: "2rem", borderRadius: "20%" }}
+					/>
+					<Typography
+						variant="h5"
+						flexGrow={1}
 						sx={{
-							overflowY: { xs: "auto", sm: "hidden" },
-							position: "relative",
+							fontWeight: { xs: 500, sm: 750 },
 						}}
 					>
-						<DialogTitle
-							textAlign={"center"}
-							bgcolor={"royalblue"}
-							color={"white"}
-							sx={{ mx: "auto", width: "10rem" }}
-							alignSelf={"center"}
-							borderRadius={"0 0 6px 6px"}
-						>
-							Challenge Rules
-						</DialogTitle>
-						<IconButton
+						SWEATFUSE
+					</Typography>
+				</Stack>
+				{user?._id ? (
+					<Button
+						onClick={logoutHandler}
+						sx={{
+							bgcolor: "white",
+							color: "#01796F",
+							borderRadius: "5px",
+							padding: { xs: "0.5rem", lg: "0.5rem 1.5rem" },
+						}}
+					>
+						Log Out
+					</Button>
+				) : (
+					<Button
+						sx={{
+							bgcolor: "white",
+							color: "#01796F",
+							borderRadius: "5px",
+							padding: { xs: "0.5rem", lg: "0.5rem 1.5rem" },
+						}}
+						onClick={() => {
+							navigate("/login");
+						}}
+					>
+						Sign Up
+					</Button>
+				)}
+			</Stack>
+			<Stack
+				alignSelf={"center"}
+				mt={"1rem"}
+				alignItems={"center"}
+				width={{ xs: "100%", md: "55%" }}
+				gap={"1rem"}
+			>
+				<Typography variant="h1" width={"100%"} textAlign={"center"}>
+					Get Better.
+				</Typography>
+				<Typography variant="h6" width={"100%"} textAlign={"center"}>
+					SweatFuse enables you to bring discipline in your life and helps you
+					to fulfill your goals.
+				</Typography>
+				<Stack direction={"row"} gap={"1rem"} mt={"1rem"}>
+					{user?._id ? (
+						<Button
 							sx={{
-								position: "absolute",
-								top: "0",
-								right: "0",
-								transform: "translate(0,-60%)",
+								color: "white",
+								bgcolor: "darkorange",
+								borderRadius: "5px",
+								padding: "0.5rem 1rem",
+								":hover": { bgcolor: "orange" },
 							}}
-							onClick={() => dispatch(setOpen(false))}
+							onClick={() => {
+								navigate("/dashboard");
+							}}
 						>
-							<CancelIcon sx={{ color: "red", height: "3rem" }} />
-						</IconButton>
-						<Stack
-							direction={{ xs: "column", xl: "row" }}
-							alignItems={"center"}
-							spacing={"2rem"}
-							padding={"2rem"}
+							Dashboard
+						</Button>
+					) : (
+						<Button
+							sx={{
+								color: "white",
+								bgcolor: "darkorange",
+								borderRadius: "5px",
+								padding: "0.5rem 1rem",
+								":hover": { bgcolor: "orange" },
+							}}
+							onClick={() => {
+								navigate("/login");
+							}}
 						>
-							<Stack spacing={"1rem"} alignItems={"center"}>
-								<Stack
-									direction={"row"}
-									alignItems={"center"}
-									spacing={"0.5rem"}
-								>
-									<Typography
-										sx={{
-											color: "white",
-											bgcolor: "royalblue",
-											width: "2rem",
-											height: "2rem",
-											borderRadius: "100%",
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-										}}
-									>
-										1
-									</Typography>
-									<span style={{ color: "royalblue", fontWeight: "540" }}>
-										Upload Your Image Daily
-									</span>
-								</Stack>
-								<Paper
-									elevation={3}
-									sx={{
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										borderRadius: "10px",
-									}}
-								>
-									<img
-										src={img1}
-										style={{
-											width: "15rem",
-											height: "15rem",
-											border: "1px solid white",
-											objectFit: "contain",
-										}}
-									/>
-								</Paper>
-							</Stack>
+							Get Started
+						</Button>
+					)}
+					<Button
+						sx={{
+							bgcolor: "white",
+							color: "#01796F",
+							borderRadius: "5px",
+							padding: "0.5rem 1rem",
+						}}
+						onClick={() => {
+							setStartVideo(true);
+						}}
+					>
+						Discover in video
+					</Button>
+				</Stack>
+			</Stack>
 
-							<Stack spacing={"1rem"} alignItems={"center"}>
-								<Stack
-									direction={"row"}
-									alignItems={"center"}
-									spacing={"0.5rem"}
-								>
-									<Typography
-										sx={{
-											color: "white",
-											bgcolor: "royalblue",
-											width: "2rem",
-											height: "2rem",
-											borderRadius: "100%",
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-										}}
-									>
-										2
-									</Typography>
-									<span style={{ color: "royalblue", fontWeight: "540" }}>
-										Keep Track Of Your Progress
-									</span>
-								</Stack>
-								<Paper
-									elevation={3}
-									sx={{
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										borderRadius: "10px",
-									}}
-								>
-									<img
-										src={img2}
-										style={{
-											width: "15rem",
-											height: "15rem",
-											border: "1px solid white",
-											objectFit: "contain",
-										}}
-									/>
-								</Paper>
-							</Stack>
-						</Stack>
-					</Stack>
-				</Dialog>
-			</Grid>
-		</>
+			<Stack
+				width={"100%"}
+				height={"48%"}
+				alignItems={"center"}
+				mt={"1rem"}
+				sx={{ position: "relative" }}
+			>
+				<Stack
+					sx={{
+						width: { xs: "100%", md: "70%" },
+						height: "100%",
+						borderRadius: "10px",
+						zIndex: 10,
+					}}
+				>
+					<img
+						src={img2}
+						style={{
+							width: "100%",
+							height: "100%",
+							objectFit: "cover",
+						}}
+					/>
+				</Stack>
+				<Stack
+					sx={{
+						position: "absolute",
+						height: "40%",
+						right: 100,
+						top: 30,
+						borderRadius: "5px",
+						display: { xs: "none", md: "block" },
+						zIndex: 10,
+					}}
+				>
+					<img
+						src={img3}
+						style={{
+							height: "100%",
+							objectFit: "contain",
+						}}
+					/>
+				</Stack>
+				<Stack
+					sx={{
+						position: "absolute",
+						height: "40%",
+						left: 120,
+						bottom: 30,
+						borderRadius: "5px",
+						zIndex: 10,
+						display: { xs: "none", md: "block" },
+					}}
+				>
+					<img
+						src={img4}
+						style={{
+							height: "100%",
+							objectFit: "cover",
+						}}
+					/>
+				</Stack>
+				<Typography
+					sx={{
+						position: "absolute",
+						height: "40%",
+						width: "10%",
+						left: { xs: 100, lg: 140 },
+						top: 0,
+						borderRadius: "100%",
+						border: "1px solid darkorange",
+						backgroundColor: "orange",
+						transform: "translateY(-60px)",
+						display: { xs: "none", md: "block" },
+					}}
+				/>
+			</Stack>
+			<Dialog open={startVideo} onClose={() => setStartVideo(false)}>
+				<video controls autoPlay>
+					<source src={video1} type="video/mp4" />
+				</video>
+			</Dialog>
+		</Stack>
 	);
 };
 

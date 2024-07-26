@@ -1,31 +1,28 @@
 /* eslint-disable react-refresh/only-export-components */
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { memo } from "react";
 import toast from "react-hot-toast";
 import { useGetProgressQuery } from "../redux/api/api";
-import { useDispatch } from "react-redux";
-import { setOpen } from "../redux/reducers/miscReducer";
 
 const Calendar = () => {
-	const dispatch = useDispatch();
 	const { data, isLoading, isError } = useGetProgressQuery();
 
 	if (isError) {
 		return toast.error("Cannot Fetch Progress");
 	}
 	return isLoading ? (
-		<Skeleton sx={{ height: "60%", width: "50%" }} />
+		<Skeleton sx={{ height: "45%", width: "87%" }} />
 	) : (
 		<Paper
 			sx={{
-				height: "60%",
-				width: "50%",
+				height: "45%",
+				width: "87%",
 				bgcolor: "white",
 				borderRadius: "20px",
-				padding: "1rem",
 				position: "relative",
 			}}
-			elevation={20}
+			elevation={10}
 		>
 			<Typography
 				fontWeight={700}
@@ -34,6 +31,7 @@ const Calendar = () => {
 					borderBottom: "1px solid black",
 					marginBottom: "1rem",
 					textAlign: "center",
+					marginTop: "1rem",
 				}}
 			>
 				Day {(data?.days as number) + 1}
@@ -44,24 +42,20 @@ const Calendar = () => {
 				height={"80%"}
 				flexWrap={"wrap"}
 				sx={{ overflowY: "auto" }}
+				justifyContent={"center"}
 			>
-				{Array.from({ length: 75 }).map((_, i) => (
-					<Button
-						variant={i < (data?.days as number) ? "contained" : "text"}
-						color="error"
-						sx={{ borderRadius: "50%" }}
-						key={i}
-					>
-						{i + 1}
-					</Button>
-				))}
+				{Array.from({ length: 75 }).map((_, i) =>
+					i < (data?.days as number) ? (
+						<Button>
+							<CheckCircleIcon key={i} sx={{ color: "#01796F" }} />
+						</Button>
+					) : (
+						<Button color="error" sx={{ borderRadius: "50%" }} key={i}>
+							{i + 1}
+						</Button>
+					)
+				)}
 			</Stack>
-			<Button
-				sx={{ color: "black", position: "absolute", bottom: 0, right: 0 }}
-				onClick={() => dispatch(setOpen(true))}
-			>
-				Rules
-			</Button>
 		</Paper>
 	);
 };

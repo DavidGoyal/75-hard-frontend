@@ -1,33 +1,80 @@
 import { useFileHandler } from "6pp";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
 	Avatar,
 	Button,
+	Drawer,
 	IconButton,
 	Paper,
+	Skeleton,
 	Stack,
 	Typography,
 } from "@mui/material";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import img3 from "../assets/Classroom-Quotes-50-800x800.jpg";
-import img2 from "../assets/images.png";
-import img1 from "../assets/self-discipline-quotes-rohn.png";
+import { useDispatch, useSelector } from "react-redux";
+import img2 from "../assets/Classroom-Quotes-50-800x800.jpg";
+import img1 from "../assets/png-transparent-task-list-thumbnail.png";
 import {
+	useCompleteTaskQuery,
 	useTodayProgressQuery,
 	useUpdateProgressMutation,
 } from "../redux/api/api";
-import { VisuallyHiddenInput } from "./styles/StyledComponents";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { setMobileOpen } from "../redux/reducers/miscReducer";
+import { RootState } from "../redux/store";
 import { updateProgress } from "../types/api-types";
+import Header from "./Header";
+import Progress from "./Progress";
+import { VisuallyHiddenInput } from "./styles/StyledComponents";
 
 const Upload = () => {
 	const photo = useFileHandler("single");
 	const { data, isLoading, isError } = useTodayProgressQuery();
+	const {
+		data: completeTasks,
+		isLoading: completeTasksLoading,
+		isError: completeTasksError,
+	} = useCompleteTaskQuery();
 	const [uploadFile] = useUpdateProgressMutation();
 	const [buttonDisable, setButtonDisable] = useState<boolean>(false);
 
+	const { user } = useSelector((state: RootState) => state.user);
+	const { isMobileOpen } = useSelector((state: RootState) => state.misc);
+
+	const dispatch = useDispatch();
+
+	const date = new Date(Date.now());
+	const weekday = [
+		"Sunday",
+		"Monday",
+		"Tuesday",
+		"Wednesday",
+		"Thursday",
+		"Friday",
+		"Saturday",
+	];
+	const month = [
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December",
+	];
+
 	if (isError) {
+		return toast.error("Something went wrong");
+	}
+
+	if (completeTasksError) {
 		return toast.error("Something went wrong");
 	}
 
@@ -63,115 +110,182 @@ const Upload = () => {
 
 	return (
 		<Stack
-			height={"calc(100vh - 4rem)"}
+			height={"100vh"}
+			width={"100%"}
 			alignItems={"center"}
-			spacing={"1rem"}
+			spacing={"2rem"}
 			padding={"2rem"}
-			justifyContent={"space-evenly"}
 			sx={{ overflowY: "auto" }}
+			position={"relative"}
 		>
 			<Stack
-				direction={{ sm: "column", md: "row" }}
+				direction={"row"}
 				width={"100%"}
 				justifyContent={"space-between"}
-				alignItems={{ sm: "center", md: "flex-start" }}
+				alignItems={"center"}
+				position={"relative"}
 			>
-				<Paper
+				<IconButton
 					sx={{
-						width: { sm: "40%", md: "60%", xl: "30%" },
-						borderRadius: "10px",
-						height: { md: "80%", xl: "50%" },
-						padding: "1rem",
-						display: { xs: "none", md: "block" },
+						position: "absolute",
+						top: 0,
+						left: 0,
+						display: { xs: "block", lg: "none" },
+						transform: "translateY(-30px) translateX(-25px)",
 					}}
-					elevation={10}
+					onClick={() => {
+						dispatch(setMobileOpen(true));
+					}}
 				>
-					<img
-						src={img1}
-						style={{ height: "100%", width: "100%", objectFit: "cover" }}
-					/>
-				</Paper>
+					<MenuIcon />
+				</IconButton>
+				<Stack>
+					<Typography fontWeight={680} fontSize={"1.4rem"}>
+						Dashboard
+					</Typography>
+					<Typography>
+						{`${weekday[date.getDay()]}, ${date.getDate()}`}{" "}
+						{month[date.getMonth()]} {date.getFullYear()}
+					</Typography>
+				</Stack>
+				<Avatar src={user?.avatar.url} />
+			</Stack>
+
+			<Stack
+				direction={{ xs: "column", sm: "row" }}
+				width={"100%"}
+				height={{ xs: "40%", sm: "20%" }}
+				bgcolor={"white"}
+				borderRadius={"5px"}
+				padding={"2rem"}
+				gap={"1.5rem"}
+				alignItems={"center"}
+			>
+				<Stack height={{ xs: "40%", sm: "100%" }}>
+					<img src={img1} alt="Task" style={{ height: "100%" }} />
+				</Stack>
+				<Stack flexGrow={1}>
+					<Typography
+						color={"#3C7348"}
+						textAlign={{ xs: "center", sm: "inherit" }}
+					>
+						Hi, <b>{user?.name}</b>
+					</Typography>
+					<Typography textAlign={{ xs: "center", sm: "inherit" }}>
+						Let&apos;s finish your task today!
+					</Typography>
+				</Stack>
+				{completeTasksLoading ? (
+					<Skeleton />
+				) : (
+					<Typography>
+						<b style={{ color: "#3C7348" }}>{`${
+							data?.success ? "No" : 5 - (completeTasks?.tasks as number)
+						} Task`}</b>{" "}
+						waiting
+					</Typography>
+				)}
+			</Stack>
+
+			<Stack
+				direction={"row"}
+				height={"42%"}
+				width={"100%"}
+				justifyContent={{ xs: "center", sm: "space-between" }}
+			>
+				<Progress />
+
 				<Paper
-					sx={{
-						width: { sm: "40%", md: "40%", xl: "30%" },
-						height: { md: "70%", xl: "50%" },
-						borderRadius: "10px",
-						padding: "1rem",
-						display: { xs: "none", xl: "block" },
-					}}
 					elevation={10}
+					sx={{
+						height: "100%",
+						width: "50%",
+						display: { xs: "none", sm: "block" },
+						borderRadius: "10px",
+					}}
 				>
 					<img
 						src={img2}
 						style={{ height: "100%", width: "100%", objectFit: "contain" }}
 					/>
 				</Paper>
-				<Paper
-					sx={{
-						width: { xs: "65%", sm: "60%", md: "60%", xl: "30%" },
-						borderRadius: "10px",
-						height: { xs: "70%", sm: "90%", md: "80%", xl: "50%" },
-						padding: "1rem",
-						color: "white",
-						alignSelf: { xs: "center", sm: "inherit" },
-					}}
-					elevation={10}
-				>
-					<img
-						src={img3}
-						style={{ height: "100%", width: "100%", objectFit: "cover" }}
-					/>
-				</Paper>
 			</Stack>
-			<Stack width={"100%"} alignItems={"center"} spacing={"1rem"}>
-				<Stack position={"relative"}>
-					<Avatar
-						sx={{ height: "15rem", width: "15rem", objectFit: "contain" }}
-						src={photo.preview!}
-					/>
-					<IconButton
-						sx={{
-							position: "absolute",
-							bottom: "0",
-							right: "0",
-							color: "white",
-							bgcolor: "rgba(0,0,0,0.5)",
-							":hover": {
-								bgColor: "rgba(0,0,0,0.5)",
-							},
-						}}
-						component="label"
-					>
-						<>
-							<CameraAltIcon />
-							<VisuallyHiddenInput type="file" onChange={photo.changeHandler} />
-						</>
-					</IconButton>
-				</Stack>
-				<Button
-					variant="contained"
-					color="error"
-					sx={{ marginBottom: "1rem" }}
-					disabled={isLoading || data?.success || buttonDisable}
-					onClick={submitHandler}
-				>
-					{data?.success
-						? "Already Uploaded Today's Photo"
-						: "Upload Your Today's Photo"}
-				</Button>
 
-				{photo.error && (
-					<Typography
-						width="fit-content"
-						m={"1rem auto"}
-						display={"block"}
-						color={"error"}
-						variant="caption"
-					>
-						{photo.error}
-					</Typography>
-				)}
+			<Stack width={"100%"} spacing={"1rem"}>
+				<Typography
+					alignSelf={"flex-start"}
+					fontWeight={650}
+					fontSize={"1.2rem"}
+				>
+					Upload Daily Selfie
+				</Typography>
+				<Stack
+					width={"100%"}
+					bgcolor={"white"}
+					padding={"1rem"}
+					alignItems={"center"}
+				>
+					<Stack width={{ xs: "70%", sm: "30%" }} gap={"2px"}>
+						<Stack position={"relative"} margin={"auto"}>
+							<Avatar
+								sx={{ height: "10rem", width: "10rem", objectFit: "contain" }}
+								src={photo.preview!}
+							/>
+							<IconButton
+								sx={{
+									position: "absolute",
+									bottom: "0",
+									right: "0",
+									color: "white",
+									bgcolor: "rgba(0,0,0,0.5)",
+									":hover": {
+										bgColor: "rgba(0,0,0,0.5)",
+									},
+								}}
+								component="label"
+							>
+								<>
+									<CameraAltIcon />
+									<VisuallyHiddenInput
+										type="file"
+										onChange={photo.changeHandler}
+									/>
+								</>
+							</IconButton>
+						</Stack>
+						<Button
+							variant="contained"
+							color="error"
+							sx={{ marginBottom: "1rem", width: "100%" }}
+							disabled={isLoading || data?.success || buttonDisable}
+							onClick={submitHandler}
+						>
+							{data?.success
+								? "Already Uploaded Today's Photo"
+								: "Upload Your Today's Photo"}
+						</Button>
+
+						{photo.error && (
+							<Typography
+								width="fit-content"
+								m={"1rem auto"}
+								display={"block"}
+								color={"error"}
+								variant="caption"
+							>
+								{photo.error}
+							</Typography>
+						)}
+					</Stack>
+				</Stack>
 			</Stack>
+			<Drawer
+				open={isMobileOpen}
+				sx={{ display: { lg: "none", md: "block" } }}
+				onClose={() => dispatch(setMobileOpen(false))}
+			>
+				<Header />
+			</Drawer>
 		</Stack>
 	);
 };

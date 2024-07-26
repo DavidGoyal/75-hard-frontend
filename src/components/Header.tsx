@@ -1,30 +1,21 @@
-import {
-	AppBar,
-	Avatar,
-	Box,
-	Button,
-	IconButton,
-	Menu,
-	MenuItem,
-	Skeleton,
-	Stack,
-	Toolbar,
-	Tooltip,
-	Typography,
-} from "@mui/material";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { RootState } from "../redux/store";
-import axios from "axios";
-import { server } from "../constants/config";
-import toast from "react-hot-toast";
-import { userNotExists } from "../redux/reducers/userReducer";
+import CollectionsIcon from "@mui/icons-material/Collections";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import HomeIcon from "@mui/icons-material/Home";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import LogoutIcon from "@mui/icons-material/Logout";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
+import { Skeleton, Stack, Typography } from "@mui/material";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import img1 from "../assets/0_1h_h2z9FDTghFT-P.jpg";
+import { server } from "../constants/config";
 import { useGetProgressQuery, useTodayProgressQuery } from "../redux/api/api";
+import { userNotExists } from "../redux/reducers/userReducer";
+import { setMobileOpen } from "../redux/reducers/miscReducer";
 
 const Header = () => {
-	const { user } = useSelector((state: RootState) => state.user);
 	const dispatch = useDispatch();
 
 	const { data, isLoading, isError } = useTodayProgressQuery();
@@ -33,25 +24,6 @@ const Header = () => {
 		isLoading: progressLoading,
 		isError: progressError,
 	} = useGetProgressQuery();
-
-	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-	const navigate = useNavigate();
-
-	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-		setAnchorElUser(event.currentTarget);
-	};
-
-	const handleCloseUserMenu = () => {
-		setAnchorElUser(null);
-	};
-
-	const homeHandler = () => {
-		navigate("/");
-	};
-
-	const galleryHandler = () => {
-		navigate("/gallery");
-	};
 
 	const logoutHandler = async () => {
 		try {
@@ -79,83 +51,154 @@ const Header = () => {
 	}
 
 	return (
-		<Box height={"4rem"} flexGrow={1}>
-			<AppBar sx={{ bgcolor: "tomato" }}>
-				<Toolbar>
-					<Typography
-						variant="h5"
-						flexGrow={1}
-						sx={{
-							fontFamily: "monospace",
-							fontWeight: { xs: 500, sm: 700 },
-							letterSpacing: { xs: 0, sm: ".3rem" },
-						}}
-					>
-						SWEATFUSE
-					</Typography>
-					<Stack direction={"row"} gap={{ xs: "0", sm: "1rem" }}>
-						<Button
-							sx={{ my: 2, color: "white", display: "block" }}
-							onClick={homeHandler}
-						>
-							HOME
-						</Button>
+		<Stack
+			padding={"1.2rem"}
+			gap={"8%"}
+			height={"100%"}
+			width={"100%"}
+			position={"relative"}
+		>
+			<Stack direction={"row"} alignItems={"center"} gap={"0.5rem"}>
+				<img
+					src={img1}
+					style={{ height: "2.2rem", width: "2rem", borderRadius: "20%" }}
+				/>
+				<Typography
+					variant="h5"
+					flexGrow={1}
+					sx={{
+						fontWeight: { xs: 500, sm: 750 },
+					}}
+				>
+					SWEATFUSE
+				</Typography>
+			</Stack>
 
-						<Button
-							sx={{ my: 2, color: "white", display: "block" }}
-							onClick={galleryHandler}
-						>
-							GALLERY
-						</Button>
+			{isLoading || progressLoading ? (
+				<Skeleton />
+			) : (
+				<Stack
+					direction={"row"}
+					bgcolor={"whitesmoke"}
+					padding={"1rem"}
+					justifyContent={"space-between"}
+					borderRadius={"7px"}
+				>
+					<Typography>My Streak</Typography>
+					<Stack
+						sx={{ p: 0, ml: { xs: "0.2rem", sm: "1rem" } }}
+						direction={"row"}
+					>
+						<WhatshotIcon sx={{ color: data!.success ? "red" : "black" }} />
+						<Typography>{progress?.days}</Typography>
 					</Stack>
+				</Stack>
+			)}
 
-					{isLoading || progressLoading ? (
-						<Skeleton />
-					) : (
-						<Tooltip title="Your Streak">
-							<IconButton
-								onClick={handleOpenUserMenu}
-								sx={{ p: 0, ml: { xs: "0.2rem", sm: "1rem" } }}
-							>
-								<WhatshotIcon
-									sx={{ color: data!.success ? "black" : "white" }}
-								/>
-								<Typography>{progress?.days}</Typography>
-							</IconButton>
-						</Tooltip>
-					)}
-
-					<Tooltip title="Options">
-						<IconButton
-							onClick={handleOpenUserMenu}
-							sx={{ p: 0, ml: { xs: "0.2rem", sm: "1rem" } }}
+			<Stack gap={"2rem"}>
+				<Link
+					to={"/"}
+					style={{ textDecoration: "none" }}
+					onClick={() => dispatch(setMobileOpen(false))}
+				>
+					<Stack direction={"row"} alignItems={"center"} gap={0.8}>
+						<HomeIcon
+							sx={{
+								color: window.location.pathname === "/" ? "#01796F" : "grey",
+							}}
+						/>
+						<Typography
+							color={window.location.pathname === "/" ? "#01796F" : "grey"}
 						>
-							<Avatar alt={user?.name} src={user!.avatar.url} />
-						</IconButton>
-					</Tooltip>
-					<Menu
-						sx={{ mt: "45px" }}
-						id="menu-appbar"
-						anchorEl={anchorElUser}
-						anchorOrigin={{
-							vertical: "top",
-							horizontal: "right",
-						}}
-						keepMounted
-						transformOrigin={{
-							vertical: "top",
-							horizontal: "right",
-						}}
-						open={Boolean(anchorElUser)}
-						onClose={handleCloseUserMenu}
-					>
-						<MenuItem onClick={handleCloseUserMenu}>
-							<Button onClick={logoutHandler}>Logout</Button>
-						</MenuItem>
-					</Menu>
-				</Toolbar>
-			</AppBar>
-		</Box>
+							Home
+						</Typography>
+					</Stack>
+				</Link>
+
+				<Link
+					to={"/dashboard"}
+					style={{ textDecoration: "none" }}
+					onClick={() => dispatch(setMobileOpen(false))}
+				>
+					<Stack direction={"row"} alignItems={"center"} gap={0.8}>
+						<DashboardIcon
+							sx={{
+								color:
+									window.location.pathname === "/dashboard"
+										? "#01796F"
+										: "grey",
+							}}
+						/>
+						<Typography
+							color={
+								window.location.pathname === "/dashboard" ? "#01796F" : "grey"
+							}
+						>
+							Dashboard
+						</Typography>
+					</Stack>
+				</Link>
+
+				<Link
+					to={"/tasks"}
+					style={{ textDecoration: "none" }}
+					onClick={() => dispatch(setMobileOpen(false))}
+				>
+					<Stack direction={"row"} alignItems={"center"} gap={0.8}>
+						<ListAltIcon
+							sx={{
+								color:
+									window.location.pathname === "/tasks" ? "#01796F" : "grey",
+							}}
+						/>
+						<Typography
+							color={window.location.pathname === "/tasks" ? "#01796F" : "grey"}
+						>
+							Tasks
+						</Typography>
+					</Stack>
+				</Link>
+
+				<Link
+					to={"/gallery"}
+					style={{ textDecoration: "none" }}
+					onClick={() => dispatch(setMobileOpen(false))}
+				>
+					<Stack direction={"row"} alignItems={"center"} gap={0.8}>
+						<CollectionsIcon
+							sx={{
+								color:
+									window.location.pathname === "/gallery" ? "#01796F" : "grey",
+							}}
+						/>
+						<Typography
+							color={
+								window.location.pathname === "/gallery" ? "#01796F" : "grey"
+							}
+						>
+							Gallery
+						</Typography>
+					</Stack>
+				</Link>
+			</Stack>
+
+			<button
+				onClick={logoutHandler}
+				style={{
+					border: "none",
+					outline: "none",
+					backgroundColor: "white",
+					position: "absolute",
+					cursor: "pointer",
+					bottom: "1rem",
+				}}
+			>
+				<Stack direction={"row"} alignItems={"center"} gap={0.8}>
+					<LogoutIcon sx={{ color: "grey" }} />
+					<Typography color={"grey"}>Log out</Typography>
+				</Stack>
+			</button>
+		</Stack>
 	);
 };
 

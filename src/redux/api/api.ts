@@ -3,8 +3,12 @@ import { server } from "../../constants/config";
 import {
 	CheckProgress,
 	GetAllPhotos,
+	GetIncompleteTasks,
+	GetMyTasks,
+	newTaskInput,
 	updateProgress,
 	updateProgressInput,
+	updateTaskInput,
 	UserInput,
 	UserResponse,
 } from "../../types/api-types";
@@ -12,7 +16,7 @@ import {
 export const api = createApi({
 	reducerPath: "api",
 	baseQuery: fetchBaseQuery({ baseUrl: `${server}/api/v1/` }),
-	tagTypes: ["Photo"],
+	tagTypes: ["Photo", "Task"],
 	endpoints: (builder) => ({
 		login: builder.mutation<UserResponse, UserInput>({
 			query: ({ email, password }) => {
@@ -63,7 +67,7 @@ export const api = createApi({
 					body: formData,
 				};
 			},
-			invalidatesTags: ["Photo"],
+			invalidatesTags: ["Photo", "Task"],
 		}),
 		resetProgress: builder.mutation<updateProgress, void>({
 			query: () => {
@@ -85,6 +89,66 @@ export const api = createApi({
 			keepUnusedDataFor: 0,
 			providesTags: ["Photo"],
 		}),
+		newTask: builder.mutation<updateProgress, newTaskInput>({
+			query: ({ content }) => {
+				return {
+					url: "task/new",
+					method: "POST",
+					credentials: "include",
+					body: { content },
+				};
+			},
+			invalidatesTags: ["Task"],
+		}),
+		getTasks: builder.query<GetMyTasks, void>({
+			query: () => {
+				return {
+					url: "task/my",
+					credentials: "include",
+				};
+			},
+			providesTags: ["Task"],
+			keepUnusedDataFor: 0,
+		}),
+		updateTask: builder.mutation<updateProgress, updateTaskInput>({
+			query: ({ id }) => {
+				return {
+					url: `task/${id}`,
+					method: "PUT",
+					credentials: "include",
+				};
+			},
+			invalidatesTags: ["Task"],
+		}),
+		deleteTask: builder.mutation<updateProgress, updateTaskInput>({
+			query: ({ id }) => {
+				return {
+					url: `task/${id}`,
+					method: "DELETE",
+					credentials: "include",
+				};
+			},
+		}),
+		completeTask: builder.query<GetIncompleteTasks, void>({
+			query: () => {
+				return {
+					url: "task/complete",
+					credentials: "include",
+				};
+			},
+			keepUnusedDataFor: 0,
+			providesTags: ["Task"],
+		}),
+		getLatestTasks: builder.query<GetMyTasks, void>({
+			query: () => {
+				return {
+					url: "task/latest",
+					credentials: "include",
+				};
+			},
+			keepUnusedDataFor: 0,
+			providesTags: ["Task"],
+		}),
 	}),
 });
 
@@ -96,4 +160,10 @@ export const {
 	useGetPhotosQuery,
 	useLoginMutation,
 	useRegisterMutation,
+	useNewTaskMutation,
+	useGetTasksQuery,
+	useUpdateTaskMutation,
+	useDeleteTaskMutation,
+	useGetLatestTasksQuery,
+	useCompleteTaskQuery,
 } = api;

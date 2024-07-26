@@ -1,4 +1,4 @@
-import { PhotoType, UserType } from "./types";
+import { PhotoType, TaskType, UserType } from "./types";
 
 export type CheckProgress = {
 	success: boolean;
@@ -26,6 +26,24 @@ export type GetAllPhotos = {
 	photos: PhotoType[];
 };
 
+export type GetMyTasks = {
+	success: boolean;
+	tasks: TaskType[];
+};
+
+export type GetIncompleteTasks = {
+	success: boolean;
+	tasks: number;
+};
+
 export type updateProgressInput = {
 	formData: FormData;
+};
+
+export type newTaskInput = {
+	content: string;
+};
+
+export type updateTaskInput = {
+	id: string;
 };
