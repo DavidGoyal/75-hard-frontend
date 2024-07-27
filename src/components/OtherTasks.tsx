@@ -87,8 +87,8 @@ const TaskCard = ({
 	const oldDate = new Date(createdAt);
 	const diff = newDate.getTime() - oldDate.getTime();
 
-	if (content.length > 24) {
-		content = content.slice(0, 24) + "...";
+	if (content.length > 22) {
+		content = content.slice(0, 22) + "...";
 	}
 	return (
 		<Stack direction={"row"} gap={"1rem"}>
