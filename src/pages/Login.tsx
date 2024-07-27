@@ -15,7 +15,6 @@ import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { VisuallyHiddenInput } from "../components/styles/StyledComponents.tsx";
-import { server } from "../constants/config.ts";
 import { useLoginMutation, useRegisterMutation } from "../redux/api/api.ts";
 import { userExists, userNotExists } from "../redux/reducers/userReducer.ts";
 import { updateProgress } from "../types/api-types.ts";
@@ -38,7 +37,6 @@ const Login = () => {
 		e.preventDefault();
 		setIsLoading(true);
 		const id = toast.loading("Signing In");
-		console.log(server);
 
 		try {
 			const res = await login({
