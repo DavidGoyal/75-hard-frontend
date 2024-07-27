@@ -75,7 +75,7 @@ const Header = () => {
 			</Stack>
 
 			{isLoading || progressLoading ? (
-				<Skeleton />
+				<Skeleton sx={{ padding: "1rem" }} />
 			) : (
 				<Stack
 					direction={"row"}

@@ -103,7 +103,7 @@ const Gallery = () => {
 						</Typography>
 
 						{isLoading ? (
-							<Skeleton height={"90%"} width={"100%"} />
+							<Skeleton height={"100%"} width={"100%"} />
 						) : photos!.length > 0 ? (
 							<ImageList
 								sx={{ width: "100%", height: "90%", overflowY: "auto" }}

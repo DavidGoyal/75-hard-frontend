@@ -147,8 +147,9 @@ const TaskPage = () => {
 				<Typography fontWeight={680} fontSize={"1.4rem"} textAlign={"center"}>
 					Task Management
 				</Typography>
+
 				{todayProgressLoading ? (
-					<Skeleton />
+					<Skeleton sx={{ width: "14%", padding: "1rem" }} />
 				) : (
 					<Button
 						sx={{
@@ -220,36 +221,39 @@ const TaskPage = () => {
 							</Stack>
 						</Stack>
 
-						<Stack
-							direction={"row"}
-							bgcolor={"white"}
-							width={{ xs: "100%", sm: "30%" }}
-							padding={"1rem"}
-							gap={"1rem"}
-							borderRadius={"5px"}
-						>
-							<EditIcon
-								sx={{
-									color: "white",
-									bgcolor: "skyblue",
-									borderRadius: "100%",
-									height: "100%",
-									width: "20%",
-								}}
+						{CompleteLoading ? (
+							<Skeleton
+								sx={{ width: { xs: "100%", sm: "30%" }, padding: "1rem" }}
 							/>
-							{CompleteLoading ? (
-								<Skeleton />
-							) : (
+						) : (
+							<Stack
+								direction={"row"}
+								bgcolor={"white"}
+								width={{ xs: "100%", sm: "30%" }}
+								padding={"1rem"}
+								gap={"1rem"}
+								borderRadius={"5px"}
+							>
+								<EditIcon
+									sx={{
+										color: "white",
+										bgcolor: "skyblue",
+										borderRadius: "100%",
+										height: "100%",
+										width: "20%",
+									}}
+								/>
+
 								<Stack>
 									<Typography color={"skyblue"}>{5 - completeTasks}</Typography>
 									<Typography>Incomplete</Typography>
 								</Stack>
-							)}
-						</Stack>
+							</Stack>
+						)}
 					</Stack>
 
 					{myTasksLoading ? (
-						<Skeleton />
+						<Skeleton sx={{ height: "100%", width: "100%" }} />
 					) : (
 						<DataGrid
 							rows={rows}
