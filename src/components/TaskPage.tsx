@@ -11,7 +11,6 @@ import {
 	Stack,
 	Typography,
 } from "@mui/material";
-import { PieChart } from "@mui/x-charts/PieChart";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -29,6 +28,7 @@ import {
 import { RootState } from "../redux/store";
 import { TaskType } from "../types/types";
 import Header from "./Header";
+import { PieChart } from "./Charts/PieChart";
 
 const TaskPage = () => {
 	const { isMobileOpen } = useSelector((state: RootState) => state.misc);
@@ -265,40 +265,30 @@ const TaskPage = () => {
 					<Stack
 						bgcolor={"white"}
 						height={"100%"}
-						width={{ xs: "100%", md: "25%" }}
+						width={{ xs: "100%", sm: "35%", md: "25%" }}
 						padding={"1rem"}
 						gap={"1rem"}
 						alignSelf={"center"}
+						justifyContent={"space-between"}
+						alignItems={"center"}
 					>
-						<Typography display={"flex"} alignItems={"center"}>
+						<Typography
+							display={"flex"}
+							alignItems={"center"}
+							alignSelf={"flex-start"}
+						>
 							<PieChartIcon />
 							Task Statistics
 						</Typography>
 
-						<Stack width={"100%"} height={"70%"}>
+						<Stack width={"100%"} height={"50%"} mt={"2rem"}>
 							<PieChart
-								series={[
-									{
-										data: [
-											{ id: 0, value: completeTasks, color: "#3C7348" },
-											{
-												id: 1,
-												value: Number(`${5 - completeTasks}`),
-												color: "red",
-											},
-										],
-									},
-								]}
-								sx={{
-									height: "100%",
-									width: "100%",
-									alignSelf: "center",
-									transform: "translateX(18%)",
-								}}
+								value={[Number(`${5 - completeTasks}`), completeTasks]}
+								labels={["Incomplete", "Complete"]}
 							/>
 						</Stack>
 
-						<Stack gap={"1rem"}>
+						<Stack gap={"1rem"} alignSelf={"flex-start"} width={"100%"}>
 							<Stack direction={"row"} justifyContent={"space-between"}>
 								<Typography>Completed</Typography>
 								<Typography color={"#3C7348"}>{completeTasks}</Typography>

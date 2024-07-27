@@ -96,7 +96,6 @@ const Gallery = () => {
 							variant="h5"
 							textAlign={"center"}
 							fontWeight={700}
-							fontFamily={"cursive"}
 							padding={"1rem"}
 							borderBottom={"1px solid black"}
 						>
