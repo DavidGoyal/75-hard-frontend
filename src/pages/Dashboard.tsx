@@ -34,14 +34,10 @@ const Home = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const { data, isLoading, isError } = useGetProgressQuery();
+	const { data, isLoading } = useGetProgressQuery();
 	const [reset] = useResetProgressMutation();
 	const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 	const { isOpen } = useSelector((state: RootState) => state.misc);
-
-	if (isError) {
-		return toast.error("Cannot Fetch Progress");
-	}
 
 	const resetHandler = async () => {
 		setButtonLoading(true);
