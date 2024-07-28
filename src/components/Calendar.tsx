@@ -2,15 +2,11 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Button, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { memo } from "react";
-import toast from "react-hot-toast";
 import { useGetProgressQuery } from "../redux/api/api";
 
 const Calendar = () => {
-	const { data, isLoading, isError } = useGetProgressQuery();
+	const { data, isLoading } = useGetProgressQuery();
 
-	if (isError) {
-		return toast.error("Cannot Fetch Progress");
-	}
 	return isLoading ? (
 		<Skeleton sx={{ height: "45%", width: "87%" }} />
 	) : (
