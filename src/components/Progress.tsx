@@ -5,7 +5,6 @@ import CircularProgress, {
 } from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import { memo } from "react";
-import toast from "react-hot-toast";
 import { useGetProgressQuery } from "../redux/api/api";
 
 function CircularProgressWithLabel(
@@ -41,12 +40,8 @@ function CircularProgressWithLabel(
 }
 
 const Progress = () => {
-	const { data, isLoading, isError } = useGetProgressQuery();
+	const { data, isLoading } = useGetProgressQuery();
 	const days = data?.days as number;
-
-	if (isError) {
-		return toast.error("Cannot Fetch Progress");
-	}
 
 	const progress = (days / 75) * 100;
 

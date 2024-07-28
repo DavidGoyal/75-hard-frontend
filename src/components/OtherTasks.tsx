@@ -8,16 +8,12 @@ import {
 } from "../redux/api/api";
 
 const OtherTasks = () => {
-	const { data, isLoading, isError } = useGetLatestTasksQuery();
+	const { data, isLoading } = useGetLatestTasksQuery();
 	const {
 		data: todayTask,
 		isLoading: todayTaskLoading,
 		isError: todayTaskError,
 	} = useTodayProgressQuery();
-
-	if (isError) {
-		return toast.error("Cannot Fetch Progress");
-	}
 
 	if (todayTaskError) {
 		return toast.error("Something went wrong");
