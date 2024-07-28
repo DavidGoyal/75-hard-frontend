@@ -8,6 +8,7 @@ import { RootState } from "./redux/store";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { server } from "./constants/config";
 import { Toaster } from "react-hot-toast";
+import { useGetProgressQuery } from "./redux/api/api";
 
 const Home = lazy(() => import("./pages/Home"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -19,6 +20,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const App = () => {
 	const dispatch = useDispatch();
 
+	useGetProgressQuery();
 	const { user, isLoading } = useSelector((state: RootState) => state.user);
 	useEffect(() => {
 		axios
