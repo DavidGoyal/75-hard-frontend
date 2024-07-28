@@ -118,7 +118,6 @@ export const api = createApi({
 					credentials: "include",
 				};
 			},
-			invalidatesTags: ["Task"],
 		}),
 		deleteTask: builder.mutation<updateProgress, updateTaskInput>({
 			query: ({ id }) => {

@@ -28,6 +28,7 @@ import { updateProgress } from "../types/api-types";
 import Header from "./Header";
 import Progress from "./Progress";
 import { VisuallyHiddenInput } from "./styles/StyledComponents";
+import { Link } from "react-router-dom";
 
 const Upload = () => {
 	const photo = useFileHandler("single");
@@ -131,7 +132,7 @@ const Upload = () => {
 						top: 0,
 						left: 0,
 						display: { xs: "block", lg: "none" },
-						transform: "translateY(-30px) translateX(-25px)",
+						transform: "translateY(-5px) translateX(-35px)",
 					}}
 					onClick={() => {
 						dispatch(setMobileOpen(true));
@@ -139,7 +140,7 @@ const Upload = () => {
 				>
 					<MenuIcon />
 				</IconButton>
-				<Stack>
+				<Stack ml={"0.5rem"}>
 					<Typography fontWeight={680} fontSize={"1.4rem"}>
 						Dashboard
 					</Typography>
@@ -178,12 +179,14 @@ const Upload = () => {
 				{completeTasksLoading ? (
 					<Skeleton />
 				) : (
-					<Typography>
-						<b style={{ color: "#3C7348" }}>{`${
-							data?.success ? "No" : 5 - (completeTasks?.tasks as number)
-						} Task`}</b>{" "}
-						waiting
-					</Typography>
+					<Link to={"/tasks"} style={{ textDecoration: "none" }}>
+						<Typography color={"initial"}>
+							<b style={{ color: "#3C7348" }}>{`${
+								data?.success ? "No" : 5 - (completeTasks?.tasks as number)
+							} Task`}</b>{" "}
+							waiting
+						</Typography>
+					</Link>
 				)}
 			</Stack>
 

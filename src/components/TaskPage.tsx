@@ -35,11 +35,13 @@ const TaskPage = () => {
 	const dispatch = useDispatch();
 
 	const [rows, setRows] = useState<TaskType[]>([]);
+	const [newRows, setNewRows] = useState<boolean>(false);
 
 	const {
 		data: Complete,
 		isLoading: CompleteLoading,
 		isError: CompleteError,
+		refetch: CompleteRefetch,
 	} = useCompleteTaskQuery();
 	const {
 		data: todayProgress,
@@ -50,12 +52,14 @@ const TaskPage = () => {
 		data: myTasks,
 		isLoading: myTasksLoading,
 		isError: myTasksError,
+		refetch: myTasksRefetch,
 	} = useGetTasksQuery();
 
 	const [updateTask] = useUpdateTaskMutation();
 
 	useEffect(() => {
 		if (myTasks && myTasks.tasks) {
+			setNewRows(true);
 			setRows(
 				myTasks.tasks.map((task) => {
 					return {
@@ -69,6 +73,7 @@ const TaskPage = () => {
 					};
 				})
 			);
+			setNewRows(false);
 		}
 	}, [myTasks]);
 
@@ -102,12 +107,22 @@ const TaskPage = () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			renderCell: (params: any) => {
 				const onClick = async () => {
-					try {
-						await updateTask({ id: params.row.id });
+					if (params.row.completed) {
+						return toast.error("Already completed the task");
+					} else {
+						const id = toast.loading("Updating task");
+						setNewRows(true);
+						try {
+							await updateTask({ id: params.row.id });
 
-						toast.success("Task updated successfully");
-					} catch (error) {
-						toast.error("Something went wrong");
+							await CompleteRefetch();
+							await myTasksRefetch();
+							toast.success("Task updated successfully", { id });
+						} catch (error) {
+							toast.error("Something went wrong", { id });
+						} finally {
+							setNewRows(false);
+						}
 					}
 				};
 				return (
@@ -115,6 +130,7 @@ const TaskPage = () => {
 						type="checkbox"
 						checked={params.row.completed}
 						onChange={onClick}
+						disabled={newRows}
 					/>
 				);
 			},
@@ -136,7 +152,7 @@ const TaskPage = () => {
 						top: 0,
 						left: 0,
 						display: { xs: "block", lg: "none" },
-						transform: "translateY(-30px) translateX(-25px)",
+						transform: "translateY(-5px) translateX(-35px)",
 					}}
 					onClick={() => {
 						dispatch(setMobileOpen(true));
@@ -144,7 +160,12 @@ const TaskPage = () => {
 				>
 					<MenuIcon />
 				</IconButton>
-				<Typography fontWeight={680} fontSize={"1.4rem"} textAlign={"center"}>
+				<Typography
+					fontWeight={680}
+					fontSize={"1.4rem"}
+					textAlign={"center"}
+					ml={"0.5rem"}
+				>
 					Task Management
 				</Typography>
 
@@ -263,8 +284,14 @@ const TaskPage = () => {
 						/>
 					)}
 				</Stack>
-				{todayProgressLoading && CompleteLoading ? (
-					<Skeleton sx={{ height: "100%", width: { xs: "100%", md: "25%" } }} />
+				{todayProgressLoading || CompleteLoading || newRows ? (
+					<Skeleton
+						sx={{
+							height: "100%",
+							width: { xs: "100%", md: "25%" },
+							alignSelf: "center",
+						}}
+					/>
 				) : (
 					<Stack
 						bgcolor={"white"}

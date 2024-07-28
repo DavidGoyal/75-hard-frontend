@@ -12,18 +12,14 @@ import { Link } from "react-router-dom";
 import img1 from "../assets/0_1h_h2z9FDTghFT-P.jpg";
 import { server } from "../constants/config";
 import { useGetProgressQuery, useTodayProgressQuery } from "../redux/api/api";
-import { userNotExists } from "../redux/reducers/userReducer";
 import { setMobileOpen } from "../redux/reducers/miscReducer";
+import { userNotExists } from "../redux/reducers/userReducer";
 
 const Header = () => {
 	const dispatch = useDispatch();
 
 	const { data, isLoading, isError } = useTodayProgressQuery();
-	const {
-		data: progress,
-		isLoading: progressLoading,
-		isError: progressError,
-	} = useGetProgressQuery();
+	const { data: progress, isLoading: progressLoading } = useGetProgressQuery();
 
 	const logoutHandler = async () => {
 		try {
@@ -44,10 +40,6 @@ const Header = () => {
 
 	if (isError) {
 		toast.error("Something went wrong");
-	}
-
-	if (progressError) {
-		return toast.error("Cannot Fetch Progress");
 	}
 
 	return (
@@ -183,7 +175,10 @@ const Header = () => {
 			</Stack>
 
 			<button
-				onClick={logoutHandler}
+				onClick={() => {
+					logoutHandler();
+					dispatch(setMobileOpen(false));
+				}}
 				style={{
 					border: "none",
 					outline: "none",

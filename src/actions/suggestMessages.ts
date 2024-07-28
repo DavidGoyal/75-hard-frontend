@@ -8,7 +8,7 @@ export async function run() {
 	const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 	const prompt =
-		"Suggest me 3 tasks for my 75 day hard challenge. Each task should be separated by ||. For example: 'Wake up early in the morning.||Read a page of book.||Do 50 pushups.' Provide only task titles. Do not start with ||.";
+		"Suggest me 3 tasks for my 75 day hard challenge that can completed in one day. Each task should be separated by ||. For example: 'Wake up early in the morning.||Read a page of book.||Do 50 pushups.' Provide only task titles. Do not start with ||.";
 
 	const result = await model.generateContent(prompt);
 	const response = result.response;
