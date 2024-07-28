@@ -10,7 +10,7 @@ type Props = {
 const ProtectedRoute = ({
 	isAuthenticated,
 	children,
-	redirect = "/login",
+	redirect = "/",
 }: Props) => {
 	if (!isAuthenticated) {
 		return <Navigate to={redirect} />;
