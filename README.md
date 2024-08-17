@@ -16,6 +16,7 @@ It is a 75 days progress tracker website. A user can keep track of progress by u
 To run this project, you will need to add the following environment variables to your .env file
 
 `VITE_BACKEND_URL`
+`VITE_GEMINI_API_KEY`
 
 ## Screenshots
 
